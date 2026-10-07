@@ -1,0 +1,539 @@
+# MASTER PROMPT FOR AI CODING AGENTS: CROP-INTELLIGENCE AI (AGRI-ADVISORY PLATFORM)
+
+Copy and paste the entire block below into your AI coding agent (Cursor, Claude Code, Replit Agent, or Antigravity Agent) to build the complete application.
+
+---
+
+```markdown
+You are acting as an Lead Principal Full-Stack Engineer, Voice AI Architect, and AI Systems Architect. Your mission is to build a production-grade, voice-enabled, context-aware, AUTOMATICALLY MULTILINGUAL AI-Powered Agriculture Crop Advisory Assistant called **AgriVaanix**.
+
+Build a fully working, production-ready full-stack application based on the exact specifications below. Do not leave `// TODO` placeholders, mocked endpoints, fake audio files, or hardcoded AI responses. Write every line of backend logic, frontend state, database schemas, and AI pipeline code explicitly.
+
+---
+
+## 1. HEADER & SYSTEM PERSONA ROLE
+
+You are an expert Prompt Engineer, AI Systems Architect, Principal Full-Stack Engineer, Voice AI Architect, and Conversational UX Designer. You possess deep expertise in React.js, Vite, Node.js, Express.js, Supabase PostgreSQL, Supabase Auth, Row Level Security (RLS), `@google/genai` SDK (`gemini-2.5-flash`), Zod validation, Web Speech API (STT/TTS), and Tailwind CSS.
+
+---
+
+## 2. CORE MISSION DIRECTIVE
+
+Take the raw assignment details for an **AI-Powered Agriculture Crop Advisory Assistant (AgriVaanix)** and construct a production-ready, deployment-complete, multi-page web application. The platform must empower farmers, agricultural extensions, and field researchers with real-time, context-aware, multilingual crop advisory, pest detection, weather-based irrigation planning, and market price insights via both voice and text interactions.
+
+---
+
+## 3. PRODUCT GOAL
+
+Farmers, agricultural workers, and rural users face fragmented agricultural information across crop selection, pest control, weather forecasting, and market pricing. Language barriers, digital literacy challenges, and typing difficulties exacerbate this problem. 
+
+**AgriVaanix** addresses this by serving as a unified conversational intelligence assistant that:
+1. Accepts spoken natural language input in local languages (English, Hindi, Telugu, and extensible to other BCP 47 codes).
+2. Performs automatic language detection and code-switching resolution (e.g., mixing local crop terms with English/Hindi).
+3. Maintains conversational memory across farming context (e.g., remembering soil type, crop name, farm size, and previous pest observations).
+4. Generates structured, validated AI crop advice using Google Gemini API (`@google/genai`).
+5. Synthesizes output into natural speech using dynamic Text-to-Speech (TTS).
+6. Persists farmer profiles, field logs, conversations, and advisory history securely in Supabase PostgreSQL with Row Level Security (RLS).
+
+---
+
+## 4. MANDATORY FEATURES
+
+1. **Automatic Multilingual Speech Input (STT):** Hands-free voice recording via microphone using Web Speech API (`webkitSpeechRecognition`) with dynamic auto-detection and fallback.
+2. **Dynamic Language Detection & Code-Switching:** Automatic identification of user language and mixed inputs (e.g., *"Paddy crop lo pest control ela cheyyali?"* or *"Wheat harvest ke liye weather report kya hai?"*).
+3. **Contextual AI Crop Advisory Engine:** Google Gemini powered multi-turn memory that remembers farm setup (e.g., soil type, field size, crop history) without forcing the user to re-type details.
+4. **Natural Text-to-Speech Output (TTS):** Spoken output synthesis using browser `window.speechSynthesis` tuned to the detected output language (`en-US`, `hi-IN`, `te-IN`, etc.), with interruptible audio control.
+5. **Crop Health & Diagnosis Assister:** Categorization of queries into actionable agricultural domains (Crop Planning, Disease & Pest Diagnosis, Weather & Irrigation, Fertilizer & Soil Health, Government Schemes, Market Prices).
+6. **Farm Profile & Field Logging:** Ability to store farmer field metadata (land area, irrigation source, primary crops, soil pH/type).
+7. **Farmer Authentication & Data Isolation:** Secure Supabase Auth with JWT and PostgreSQL Row Level Security (RLS).
+8. **Interactive Advisory History:** History panel to browse, reopen, continue, or delete prior farming consultations.
+9. **Graceful Error & Offline Handling:** Clear, non-technical feedback for speech permissions, network disruptions, or AI API rate limits.
+
+---
+
+## 5. TECHNOLOGY REQUIREMENTS
+
+- **Frontend Framework:** React 18+ with Vite, TypeScript, React Router v6.
+- **Styling & UI Components:** Tailwind CSS, Lucide React Icons, Framer Motion (for voice state animations).
+- **Backend Runtime:** Node.js (v18+) with Express.js & TypeScript (`ts-node-dev` for hot reloading).
+- **Database & Authentication:** Supabase PostgreSQL with Supabase Auth (`@supabase/supabase-js`) & Row Level Security (RLS).
+- **Validation Engine:** Zod (`zod`) for end-to-end payload validation.
+- **Primary AI Engine:** Official `@google/genai` SDK using `gemini-2.5-flash`.
+- **Speech Capabilities:**
+  - **Speech-to-Text (STT):** Web Speech API with dynamic BCP-47 auto-mapping (`en-US`, `hi-IN`, `te-IN`).
+  - **Text-to-Speech (TTS):** Browser `window.speechSynthesis` with language matchers and text fallback.
+
+---
+
+## 6. APPLICATION PAGES (ROUTES)
+
+- **Public Routes:**
+  - `/` — Landing page with AgriVaanix branding, voice feature showcase, supported languages, and quick start CTA.
+  - `/login` — Farmer/User authentication login page.
+  - `/register` — User registration with initial farm language & region preferences.
+- **Authenticated Routes:**
+  - `/dashboard` — Main voice + text advisory workspace with microphone controls, rapid prompts, and active chat interface.
+  - `/chat/:conversationId` — Deep-link context view for specific ongoing agricultural consultations.
+  - `/history` — Historical log of past advisories, diagnoses, and crop consultations.
+  - `/farm-profile` — Farm profile management (soil type, crop details, land size, location).
+  - `/settings` — User preferences, TTS speed, auto-play speech toggles, and language defaults.
+  - `/help` — Guided usage instructions, voice command examples, and offline advisory tips.
+
+---
+
+## 7. USER FLOW
+
+1. **Onboarding:** Farmer signs up or logs in. During registration, default region and preferred native language (e.g., Telugu, Hindi, English) can optionally be selected.
+2. **Initiating Advisory:** Farmer clicks the microphone button on `/dashboard` or types a query.
+3. **Voice Processing:** Speech-to-Text captures audio and converts it to text.
+4. **Backend Ingestion:** Express API receives the text input, user token, and optional farm metadata.
+5. **Context Building:** Backend loads the farmer's active farm profile and previous 10 message exchanges from Supabase.
+6. **Gemini Processing:** `@google/genai` evaluates user query, detects language + code-switching intent, classifies topic domain, and returns structured advice JSON.
+7. **Response Delivery:**
+   - Frontend renders formatted advisory (with bullet points for step-by-step action items).
+   - TTS auto-synthesizes speech in the detected output language.
+8. **Follow-Up:** Farmer speaks/types follow-up questions using pronouns (*"How much of it should I apply per acre?"*); AgriVaanix maintains full context window.
+
+---
+
+## 8. TARGET DOMAINS & CATEGORIZATION
+
+Every user query is automatically categorized into one of the following agricultural domains:
+- `CROP_SELECTION` — Crop suitability, seed varieties, seasonal planning.
+- `PEST_DISEASE_DIAGNOSIS` — Symptom identification, organic/chemical treatment advice.
+- `WEATHER_IRRIGATION` — Rain forecast interpretation, watering schedules, drought management.
+- `SOIL_FERTILIZER` — Soil test analysis, NPK dosage calculation, organic composting.
+- `MARKET_PRICES` — Mandi prices, crop selling timing, cold storage advice.
+- `GOVT_SCHEMES` — Subsidies, crop insurance (PMFBY), PM-KISAN, local agrarian support.
+- `GENERAL_AGRI` — General conversation, greetings, platform usage help.
+- `LANGUAGE_SWITCH` — Natural requests to change active spoken language.
+- `UNSUPPORTED` — Non-agricultural or invalid requests.
+
+---
+
+## 9. FORM & ADVISORY CONFIGURATION
+
+Every farm advisory interaction maintains structured configuration state:
+
+```typescript
+export interface FarmProfileConfig {
+  user_id: string;
+  farm_location: string;
+  land_size_acres: number;
+  soil_type: 'clay' | 'sandy' | 'loam' | 'black' | 'red' | 'alluvial' | 'other';
+  primary_crops: string[];
+  irrigation_source: 'borewell' | 'canal' | 'rainfed' | 'drip' | 'sprinkler';
+}
+
+export interface ConversationState {
+  conversation_id: string;
+  user_id: string;
+  title: string;
+  active_language_code: string;
+  created_at: string;
+  updated_at: string;
+}
+
+```
+
+---
+
+## 10. DATABASE SCHEMA (PRODUCTION SQL FOR SUPABASE POSTGRESQL)
+
+Execute this script in Supabase SQL Editor (`database/schema.sql`):
+
+```sql
+-- Enable UUID Extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. PROFILES TABLE (Tied to Supabase auth.users)
+CREATE TABLE IF NOT EXISTS public.profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone_number VARCHAR(20),
+    preferred_language VARCHAR(10) DEFAULT 'auto',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. FARM_PROFILES TABLE
+CREATE TABLE IF NOT EXISTS public.farm_profiles (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID UNIQUE NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+    farm_location VARCHAR(255) DEFAULT 'Not Specified',
+    land_size_acres NUMERIC(5,2) DEFAULT 1.0,
+    soil_type VARCHAR(50) DEFAULT 'loam',
+    primary_crops TEXT[] DEFAULT ARRAY['Paddy'],
+    irrigation_source VARCHAR(50) DEFAULT 'borewell',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. CONVERSATIONS TABLE
+CREATE TABLE IF NOT EXISTS public.conversations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL DEFAULT 'Crop Advisory Session',
+    active_language VARCHAR(10) DEFAULT 'auto',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4. MESSAGES TABLE
+CREATE TABLE IF NOT EXISTS public.messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    conversation_id UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
+    sender VARCHAR(20) NOT NULL CHECK (sender IN ('user', 'assistant', 'system')),
+    content TEXT NOT NULL,
+    detected_language VARCHAR(50) DEFAULT 'English',
+    language_code VARCHAR(10) DEFAULT 'en',
+    domain_category VARCHAR(50) DEFAULT 'GENERAL_AGRI',
+    confidence NUMERIC(3,2) DEFAULT 0.95,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5. USER_PREFERENCES TABLE
+CREATE TABLE IF NOT EXISTS public.user_preferences (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID UNIQUE NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+    preferred_voice VARCHAR(100) DEFAULT 'default',
+    speech_rate NUMERIC(3,2) DEFAULT 1.0,
+    auto_play_tts BOOLEAN DEFAULT TRUE,
+    theme VARCHAR(20) DEFAULT 'light',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- INDEXES
+CREATE INDEX IF NOT EXISTS idx_conversations_user ON public.conversations(user_id);
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON public.messages(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created ON public.messages(created_at ASC);
+
+```
+
+---
+
+## 11. ROW LEVEL SECURITY (RLS) / DATA ISOLATION RULES
+
+```sql
+-- Enable Row Level Security on all tables
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.farm_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_preferences ENABLE ROW LEVEL SECURITY;
+
+-- Profiles Policies
+CREATE POLICY "Users can view own profile" ON public.profiles
+    FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.profiles
+    FOR UPDATE USING (auth.uid() = id);
+
+-- Farm Profiles Policies
+CREATE POLICY "Users can view own farm profile" ON public.farm_profiles
+    FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert/update own farm profile" ON public.farm_profiles
+    FOR ALL USING (auth.uid() = user_id);
+
+-- Conversations Policies
+CREATE POLICY "Users can manage own conversations" ON public.conversations
+    FOR ALL USING (auth.uid() = user_id);
+
+-- Messages Policies
+CREATE POLICY "Users can access messages in own conversations" ON public.messages
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.conversations
+            WHERE public.conversations.id = public.messages.conversation_id
+            AND public.conversations.user_id = auth.uid()
+        )
+    );
+
+-- User Preferences Policies
+CREATE POLICY "Users can manage own preferences" ON public.user_preferences
+    FOR ALL USING (auth.uid() = user_id);
+
+```
+
+---
+
+## 12. BACKEND API ROUTES
+
+Implement RESTful Express endpoints validated with Zod & Supabase Auth Middleware:
+
+* `POST /api/auth/sync` — Sync Supabase auth user with `public.profiles` & default `farm_profiles`.
+* `GET /api/farm-profile` — Fetch current user's farm details.
+* `PUT /api/farm-profile` — Update soil type, crops, land size, and irrigation method.
+* `POST /api/conversations` — Create a new advisory chat session.
+* `GET /api/conversations` — List active user's advisory sessions.
+* `GET /api/conversations/:id/messages` — Retrieve history for a specific conversation.
+* `DELETE /api/conversations/:id` — Delete conversation and related messages.
+* `POST /api/ai/advisory` — Main endpoint accepting user voice/text query, invoking Gemini API, and returning structured multilingual crop advice.
+
+---
+
+## 13. GEMINI SDK SETUP & SERVER-SIDE SECURITY
+
+Use `@google/genai` SDK on server side. **NEVER** expose `GEMINI_API_KEY` to client-side code.
+
+`server/src/services/gemini.service.ts`:
+
+```typescript
+import { GoogleGenAI } from '@google/genai';
+import { env } from '../config/env';
+
+export const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+
+```
+
+All requests sanitize user input, restrict max tokens to prevent runaway API usage, enforce schema validation using `responseMimeType: 'application/json'`, and catch API errors gracefully.
+
+---
+
+## 14. AI SYSTEM PROMPT
+
+```text
+You are AgriVaanix, an expert AI Agricultural Crop Advisor, Plant Pathologist, and Soil Health Specialist.
+Your mission is to provide accurate, practical, actionable, and safe farming advice to farmers.
+
+AUTOMATIC MULTILINGUAL & CODE-SWITCHING INSTRUCTIONS:
+1. Detect the primary language or mixed languages (code-switching) used in the user's input (e.g., English, Hindi, Telugu, Tamil, Marathi, Punjabi, Bengali, etc.).
+2. If input is code-switched (e.g., "Paddy crop lo pest control ela cheyyali?"), extract intent and respond in the target native/preferred regional language requested or implied.
+3. Adapt language naturally:
+   - English: Clear, simple agricultural terms.
+   - Hindi: Native Devanagari script (हिंदी).
+   - Telugu: Native Telugu script (తెలుగు).
+4. Respect explicit language change requests (e.g., "Speak in Telugu", "हिंदी में समझाओ").
+5. Incorporate farmer context (soil type, crop, irrigation source, land size) into recommendations without repeating raw facts unnecessarily.
+6. Provide structured recommendations: diagnostic diagnosis, recommended remedies (organic & safe chemical options), application timing, and precautionary safety rules.
+
+```
+
+---
+
+## 15. DETAILED AI PROMPTS (WITH REQUIRED JSON SCHEMAS)
+
+Gemini prompt invocation forces JSON response structure:
+
+```json
+{
+  "advisoryResponse": "Actionable crop advisory text in the user's target language.",
+  "detectedLanguage": "Telugu",
+  "languageCode": "te",
+  "requestedLanguage": "te",
+  "domainCategory": "PEST_DISEASE_DIAGNOSIS",
+  "confidence": 0.96,
+  "actionSteps": [
+    "Step 1: Spray Neem oil (5ml/L) early in the morning.",
+    "Step 2: Ensure proper field drainage."
+  ],
+  "safetyWarning": "Wear protective gloves when handling treatments."
+}
+
+```
+
+---
+
+## 16. ZOD VALIDATION REQUIREMENTS
+
+`server/src/validators/schemas.ts`:
+
+```typescript
+import { z } from 'zod';
+
+export const FarmProfileSchema = z.object({
+  farm_location: z.string().min(2, 'Location required'),
+  land_size_acres: z.number().positive('Land size must be positive'),
+  soil_type: z.enum(['clay', 'sandy', 'loam', 'black', 'red', 'alluvial', 'other']),
+  primary_crops: z.array(z.string()).min(1, 'Select at least one crop'),
+  irrigation_source: z.enum(['borewell', 'canal', 'rainfed', 'drip', 'sprinkler'])
+});
+
+export const AdvisoryQuerySchema = z.object({
+  conversation_id: z.string().uuid('Invalid conversation ID'),
+  query: z.string().min(1, 'Query cannot be empty').max(4000, 'Query too long'),
+  active_language_code: z.string().optional().default('auto')
+});
+
+export const MultilingualAiResponseSchema = z.object({
+  advisoryResponse: z.string(),
+  detectedLanguage: z.string(),
+  languageCode: z.string(),
+  requestedLanguage: z.string(),
+  domainCategory: z.enum([
+    'CROP_SELECTION',
+    'PEST_DISEASE_DIAGNOSIS',
+    'WEATHER_IRRIGATION',
+    'SOIL_FERTILIZER',
+    'MARKET_PRICES',
+    'GOVT_SCHEMES',
+    'GENERAL_AGRI',
+    'LANGUAGE_SWITCH',
+    'UNSUPPORTED'
+  ]),
+  confidence: z.number().min(0).max(1),
+  actionSteps: z.array(z.string()).optional(),
+  safetyWarning: z.string().optional()
+});
+
+```
+
+---
+
+## 17. FRONTEND COMPONENTS LIST
+
+* **Common Components:**
+* `Navbar.tsx` — App branding, status badges, profile shortcut, active language indicator.
+* `Sidebar.tsx` — Recent conversations, navigation links, farm profile status.
+* `Toast.tsx` — Accessible alert notifications.
+* `LoadingIndicator.tsx` — Animated agricultural loader.
+
+
+* **Voice & Chat Components:**
+* `VoiceButton.tsx` — Pulsing mic button for IDLE, LISTENING, PROCESSING, SPEAKING states.
+* `ChatWindow.tsx` — Main advisory conversation thread container.
+* `MessageBubble.tsx` — Formatted message display with markdown rendering and action step checklists.
+* `AudioPlayerControls.tsx` — Play/Pause/Replay/Stop response speech controls.
+* `QuickPrompts.tsx` — One-tap sample farming questions (*"Pest control in Paddy"*, *"Fertilizer schedule for Wheat"*).
+
+
+* **Farm Profile Components:**
+* `FarmProfileForm.tsx` — Editable land area, soil, crop type, and irrigation controls.
+
+
+
+---
+
+## 18. SECURITY REQUIREMENTS
+
+1. **API Key Isolation:** `@google/genai` API Key remains exclusively on Node/Express backend.
+2. **Supabase RLS Enforced:** All SQL queries enforce `auth.uid() = user_id`.
+3. **Payload Sanitization:** Input string validation via Zod prohibits injection attacks.
+4. **CORS Restricted:** Express CORS restricts requests strictly to `FRONTEND_URL`.
+5. **Rate Limiting:** Protect `/api/ai/advisory` against automated abuse.
+
+---
+
+## 19. ENVIRONMENT VARIABLES TEMPLATE
+
+### Backend (`server/.env`):
+
+```env
+PORT=5000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
+
+# Supabase PostgreSQL & Auth
+SUPABASE_URL=[https://your-project-ref.supabase.co](https://your-project-ref.supabase.co)
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
+
+# AI Services
+GEMINI_API_KEY=your_google_gemini_api_key
+
+```
+
+### Frontend (`client/.env`):
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+VITE_SUPABASE_URL=[https://your-project-ref.supabase.co](https://your-project-ref.supabase.co)
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+```
+
+---
+
+## 20. SUGGESTED FOLDER STRUCTURE
+
+```
+agrivaanix/
+├── .env.example
+├── README.md
+├── database/
+│   └── schema.sql
+├── server/
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── src/
+│       ├── index.ts
+│       ├── config/
+│       │   ├── db.ts
+│       │   ├── supabase.ts
+│       │   └── env.ts
+│       ├── controllers/
+│       │   ├── ai.controller.ts
+│       │   ├── conversation.controller.ts
+│       │   └── farm.controller.ts
+│       ├── middleware/
+│       │   ├── auth.middleware.ts
+│       │   └── error.middleware.ts
+│       ├── routes/
+│       │   ├── ai.routes.ts
+│       │   ├── conversation.routes.ts
+│       │   └── farm.routes.ts
+│       ├── services/
+│       │   └── gemini.service.ts
+│       └── validators/
+│           └── schemas.ts
+└── client/
+    ├── package.json
+    ├── vite.config.ts
+    ├── tailwind.config.js
+    └── src/
+        ├── main.tsx
+        ├── App.tsx
+        ├── components/
+        │   ├── common/
+        │   ├── chat/
+        │   ├── voice/
+        │   └── farm/
+        ├── hooks/
+        │   ├── useSpeechRecognition.ts
+        │   └── useSpeechSynthesis.ts
+        ├── pages/
+        │   ├── LandingPage.tsx
+        │   ├── LoginPage.tsx
+        │   ├── RegisterPage.tsx
+        │   ├── DashboardPage.tsx
+        │   ├── HistoryPage.tsx
+        │   └── FarmProfilePage.tsx
+        └── services/
+            └── api.ts
+
+```
+
+---
+
+## 21. IMPLEMENTATION PHASES
+
+* **Phase 1: Project Setup & Dependencies:** Scaffold Vite React client and Node/Express server with TypeScript, Tailwind CSS, Lucide icons, Zod, and `@google/genai`.
+* **Phase 2: Database & Auth Setup:** Apply Supabase SQL migrations, configure RLS policies, and set up client/server Auth middleware.
+* **Phase 3: Gemini Advisory Engine:** Build server-side `GeminiService` targeting `gemini-2.5-flash` with structured JSON output instructions and farm profile context blending.
+* **Phase 4: Multilingual Voice Hooks:** Build `useSpeechRecognition` and `useSpeechSynthesis` hooks with BCP-47 language auto-detection and code-switching fallback.
+* **Phase 5: Advisory UI Workspace:** Create responsive `/dashboard`, `VoiceButton`, `ChatWindow`, `MessageBubble` with audio controls and step-by-step advisory formatting.
+* **Phase 6: Farm Profile & History Management:** Implement `/farm-profile` settings and `/history` conversation session browser.
+* **Phase 7: End-to-End Testing & Polish:** Verify voice state transitions, language switching during active session, RLS data isolation, and deployment setup on Vercel (frontend) + Render/Railway (backend).
+
+---
+
+## 22. ACCEPTANCE CRITERIA
+
+1. User can register, sign in, and configure farm profile details (soil, land area, crops).
+2. User can trigger voice input in English, Hindi, Telugu, or mixed speech without selecting dropdowns.
+3. System accurately detects input language and responds in matching spoken and written language.
+4. Gemini retains context across follow-up questions using pronouns (*"How often should I apply it?"*).
+5. Responses include domain classification, step-by-step action items, and safety guidelines.
+6. Audio speech synthesis plays automatically (when enabled) and can be stopped/replayed.
+7. Database enforces strict data isolation using Supabase RLS policies.
+8. API key remains completely concealed from client JavaScript bundle.
+
+---
+
+## 23. FINAL INSTRUCTION TO CODING AGENT
+
+Build the complete **AgriVaanix** application from start to finish. Do not leave placeholder comments, mock APIs, or fake audio logic. Generate all database migration files, Express routes, Gemini AI integrations, React custom hooks, and Tailwind-styled pages. Ensure full end-to-end functionality ready for production deployment.
+
+```
+
+```

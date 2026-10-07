@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "AgriVaanix"
+description = "A voice-first multilingual crop advisory app for farmers, agricultural extension workers, and field researchers. Get contextual crop guidance, keep farm and advisory history, and use conversational help across text and speech."
+version = "1.0.0"
+id = "artifacts/agrivaanix"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25689
+
+[services.development]
+run = "pnpm --filter @workspace/agrivaanix run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/agrivaanix", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/agrivaanix/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25689"
+BASE_PATH = "/"

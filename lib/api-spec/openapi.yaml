@@ -10,6 +10,10 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: agrivaanix
+    description: Farm profiles, advisory history, and AI-assisted crop guidance
+security:
+  - bearerAuth: []
 paths:
   /healthz:
     get:
@@ -24,7 +28,179 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [agrivaanix]
+      summary: Get the farmer's dashboard overview
+      responses:
+        "200":
+          description: Dashboard overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /auth/config:
+    get:
+      operationId: getAuthConfig
+      tags: [agrivaanix]
+      summary: Get public Supabase authentication configuration
+      security: []
+      responses:
+        "200":
+          description: Public client configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthConfig"
+  /farm-profile:
+    get:
+      operationId: getFarmProfile
+      tags: [agrivaanix]
+      summary: Get the current farmer's farm profile
+      responses:
+        "200":
+          description: Farm profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FarmProfile"
+    put:
+      operationId: saveFarmProfile
+      tags: [agrivaanix]
+      summary: Create or update the current farmer's farm profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FarmProfileInput"
+      responses:
+        "200":
+          description: Saved farm profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FarmProfile"
+  /conversations:
+    get:
+      operationId: listConversations
+      tags: [agrivaanix]
+      summary: List the current farmer's advisory conversations
+      responses:
+        "200":
+          description: Conversations ordered by recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+    post:
+      operationId: createConversation
+      tags: [agrivaanix]
+      summary: Start a new advisory conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationInput"
+      responses:
+        "201":
+          description: Created conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+  /conversations/{id}:
+    get:
+      operationId: getConversation
+      tags: [agrivaanix]
+      summary: Get a conversation and its messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationDetail"
+        "404":
+          description: Conversation not found
+    delete:
+      operationId: deleteConversation
+      tags: [agrivaanix]
+      summary: Delete a conversation and its messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Conversation deleted
+        "404":
+          description: Conversation not found
+  /conversations/{id}/messages:
+    post:
+      operationId: sendAdvisoryMessage
+      tags: [agrivaanix]
+      summary: Send a message and receive a structured crop advisory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdvisoryMessageInput"
+      responses:
+        "200":
+          description: User message and AI advisory response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvisoryExchange"
+    get:
+      operationId: listConversationMessages
+      tags: [agrivaanix]
+      summary: List messages in a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Conversation messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdvisoryMessage"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +209,181 @@ components:
           type: string
       required:
         - status
+    DashboardSummary:
+      type: object
+      properties:
+        activeFields:
+          type: integer
+        conversationCount:
+          type: integer
+        adviceCount:
+          type: integer
+        recentConversations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Conversation"
+      required: [activeFields, conversationCount, adviceCount, recentConversations]
+    AuthConfig:
+      type: object
+      properties:
+        supabaseUrl:
+          type: string
+          format: uri
+        supabaseAnonKey:
+          type: string
+      required: [supabaseUrl, supabaseAnonKey]
+    FarmProfile:
+      type: object
+      properties:
+        fullName:
+          type: string
+        region:
+          type: string
+        preferredLanguage:
+          type: string
+        landArea:
+          type: number
+        landUnit:
+          type: string
+        irrigationSource:
+          type: string
+        soilType:
+          type: string
+        soilPh:
+          type: ["number", "null"]
+        primaryCrops:
+          type: array
+          items:
+            type: string
+        updatedAt:
+          type: string
+          format: date-time
+      required: [fullName, region, preferredLanguage, landArea, landUnit, irrigationSource, soilType, soilPh, primaryCrops, updatedAt]
+    FarmProfileInput:
+      type: object
+      properties:
+        fullName:
+          type: string
+          maxLength: 120
+        region:
+          type: string
+          maxLength: 160
+        preferredLanguage:
+          type: string
+          enum: [en, hi, te]
+        landArea:
+          type: number
+          minimum: 0
+        landUnit:
+          type: string
+          enum: [acres, hectares]
+        irrigationSource:
+          type: string
+          maxLength: 120
+        soilType:
+          type: string
+          maxLength: 120
+        soilPh:
+          type: ["number", "null"]
+          minimum: 0
+          maximum: 14
+        primaryCrops:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+      required: [fullName, region, preferredLanguage, landArea, landUnit, irrigationSource, soilType, soilPh, primaryCrops]
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        messageCount:
+          type: integer
+      required: [id, title, createdAt, updatedAt, messageCount]
+    ConversationInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+      required: [title]
+    AdvisoryMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        conversationId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        domain:
+          type: string
+          enum: [crop_planning, pest_diagnosis, weather_irrigation, soil_fertilizer, government_schemes, market_prices, general]
+        language:
+          type: string
+        actionItems:
+          type: array
+          items:
+            type: string
+        safetyNotes:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, conversationId, role, content, domain, language, actionItems, safetyNotes, createdAt]
+    AdvisoryMessageInput:
+      type: object
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required: [content]
+    ConversationDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        messageCount:
+          type: integer
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdvisoryMessage"
+      required: [id, title, createdAt, updatedAt, messageCount, messages]
+    AdvisoryExchange:
+      type: object
+      properties:
+        userMessage:
+          $ref: "#/components/schemas/AdvisoryMessage"
+        assistantMessage:
+          $ref: "#/components/schemas/AdvisoryMessage"
+      required: [userMessage, assistantMessage]
 
